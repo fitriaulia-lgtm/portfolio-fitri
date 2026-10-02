@@ -12,6 +12,18 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  scroll-snap-type: y mandatory;
+  scroll-padding-block: 0;
+}
+
+/* Semua section full-screen jadi titik snap agar swipe langsung ke section
+   berikutnya tanpa jeda. Section pendek tetap ikut snap lewat start. */
+main > div > section,
+main section {
+  scroll-snap-align: start;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -23,4 +35,948 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.id-lanyard-pair {
+  position: relative;
+  flex: none;
+}
+
+.id-card-assembly {
+  isolation: isolate;
+}
+
+/* Halo ambient di belakang kartu (z-index: -1): dusty pink, lavender, dan cyan rose. */
+.id-card-assembly::before {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  z-index: -1;
+  width: 118%;
+  height: 58%;
+  content: '';
+  transform: translateX(-50%);
+  background:
+    radial-gradient(circle 200px at var(--foil-x, 50%) var(--foil-y, 50%), rgba(255, 243, 247, 0.34) 0%, rgba(233, 189, 200, 0.2) 34%, rgba(168, 152, 214, 0.12) 58%, transparent 78%),
+    radial-gradient(ellipse at 40% 42%, rgba(226, 178, 189, 0.3) 0%, rgba(209, 148, 162, 0.16) 38%, transparent 70%),
+    radial-gradient(ellipse at 64% 56%, rgba(168, 152, 214, 0.22) 0%, rgba(139, 122, 173, 0.12) 40%, transparent 72%),
+    radial-gradient(ellipse at 54% 72%, rgba(120, 190, 200, 0.14) 0%, transparent 62%),
+    radial-gradient(ellipse at 30% 66%, rgba(232, 160, 184, 0.16) 0%, transparent 58%);
+  filter: blur(38px);
+  pointer-events: none;
+  opacity: 0.78;
+  transition: opacity 620ms ease-out, transform 620ms ease-out;
+}
+
+.id-card-assembly:hover::before,
+.id-card-assembly.id-card-dragging::before {
+  opacity: 1;
+  transform: translateX(-50%) scale(1.05);
+  transition-duration: 180ms;
+}
+
+.id-lanyard-strap {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 11px);
+  z-index: 1;
+  width: 22px;
+  height: calc(100% - 4px);
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  border-inline: 1px solid rgba(215, 164, 175, 0.34);
+  border-radius: 0 0 3px 3px;
+  background-color: #252629;
+  background:
+    repeating-linear-gradient(112deg, rgba(238, 213, 219, 0.12) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg, rgba(250, 239, 241, 0.08) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(14, 12, 14, 0.18) 0 1px, transparent 1px 4px),
+    linear-gradient(90deg, #171417 0%, #30262a 24%, #49383e 50%, #30252a 76%, #151215 100%);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5), inset 1px 0 rgba(255, 255, 255, 0.11), inset -1px 0 rgba(215, 164, 175, 0.12);
+}
+
+.id-lanyard-strap::before {
+  position: absolute;
+  top: 0;
+  bottom: 2px;
+  left: 3px;
+  width: 1px;
+  content: '';
+  background: rgba(235, 197, 205, 0.22);
+  box-shadow: 14px 0 rgba(235, 197, 205, 0.18);
+}
+
+.id-lanyard-brand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: max-content;
+  transform: translate(-50%, -50%) rotate(90deg);
+  color: rgba(242, 211, 219, 0.82);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 5px;
+  letter-spacing: 0.11em;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 4px rgba(215, 164, 175, 0.28);
+  pointer-events: none;
+}
+
+.id-card-hardware {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  z-index: 20;
+  width: 28px;
+  height: 30px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.65));
+}
+
+.id-card-hook {
+  position: relative;
+  display: block;
+  width: 12px;
+  height: 20px;
+  margin-inline: auto;
+  border: 2px solid #bfc0c1;
+  border-bottom: 0;
+  border-radius: 8px 8px 2px 2px;
+  background: linear-gradient(90deg, #55575a 0%, #eef0ef 40%, #8e9092 70%, #d2d3d2 100%);
+  box-shadow: inset 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.id-card-hook::after {
+  position: absolute;
+  bottom: -3px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  content: '';
+  transform: rotate(45deg);
+  border-right: 1.5px solid #d5d6d6;
+  border-bottom: 1.5px solid #d5d6d6;
+}
+
+.id-card-swivel {
+  position: absolute;
+  top: 19px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  transform: translateX(-50%);
+  border: 1px solid #e1e1df;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #686a6c, #f0f0ee 48%, #77797a);
+}
+
+.id-card-eyelet {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: 10px;
+  height: 13px;
+  transform: translateX(-50%);
+  border: 2px solid #d0d0ce;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #171719 0 31%, #76787a 38% 53%, #252629 64%);
+  box-shadow: inset 0 0 0 1px #77797a, 0 0 0 1px rgba(31, 32, 33, 0.8);
+}
+
+.id-card-floating-card {
+  animation: none;
+}
+
+.id-card-front-face,
+.id-card-back-face {
+  isolation: isolate;
+  overflow: hidden;
+  border-color: rgba(220, 220, 230, 0.28);
+  /* Tanpa backdrop-filter: sisi depan memakai background opaque sehingga
+     filter di belakangnya tidak terlihat sama sekali, tapi tetap diproses
+     tiap frame. */
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 0 28px rgba(122, 176, 187, 0.045),
+    0 0 32px rgba(120, 183, 192, 0.07),
+    0 0 38px rgba(193, 111, 139, 0.08),
+    0 25px 60px rgba(0, 0, 0, 0.75);
+}
+
+.id-card-back-face {
+  backdrop-filter: blur(18px) saturate(145%);
+}
+
+/* Default: hitam/gelap polos, gradasi holografik TIDAK sama sekali terlihat.
+   Gradasi hanya muncul lewat layer foil ::before saat kursor di atas kartu. */
+.id-card-front-face {
+  border-color: rgba(220, 220, 230, 0.28);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.08),
+    0 25px 60px rgba(0, 0, 0, 0.75);
+  background-color: #0a0a0a;
+  background-image: none;
+}
+
+.id-card-back-face {
+  border-color: rgba(209, 148, 162, 0.48);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 0 28px rgba(209, 148, 162, 0.06),
+    0 0 24px rgba(209, 148, 162, 0.14),
+    0 0 36px rgba(209, 148, 162, 0.08),
+    0 25px 60px rgba(0, 0, 0, 0.75);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 35%),
+    linear-gradient(155deg, rgba(33, 31, 37, 0.82), rgba(13, 14, 18, 0.86));
+}
+
+/* ===== HOLOGRAPHIC / IRIDESCENT GLASS GLOW =====
+   Palet pelangi holografik: cyan/toska -> pink/magenta -> lime -> ungu neon.
+   Menempati z-index: 0 (latar kartu), DI BAWAH foto (z-index: 2).
+   Tanpa mix-blend-mode supaya foto tetap bersih.
+   Default opacity: 0 — gradasi sama sekali tidak kelihatan.
+   Transisi 500ms supaya muncul dan hilang dengan mulus. */
+.id-card-front-face::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+  background:
+    /* Layer 1: sebaran warna utama cyan -> pink -> lime -> ungu.
+       Hex dipakai dari palet 700/800 supaya gelap di atas latar hitam,
+       hue-nya tetap terbaca sebagai holografik tapi tidak menyilaukan. */
+    linear-gradient(
+      125deg,
+      #0e7490 0%,
+      #9d174d 32%,
+      #4d7c0f 58%,
+      #5b21b6 82%,
+      #0e7490 100%
+    ),
+    /* Layer 2: kilau radial lembut di sekitar kursor, intensitas rendah */
+    radial-gradient(
+      circle 220px at var(--foil-x, 50%) var(--foil-y, 50%),
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(14, 116, 144, 0.24) 24%,
+      rgba(157, 23, 77, 0.2) 48%,
+      rgba(91, 33, 182, 0.16) 70%,
+      transparent 88%
+    ),
+    /* Layer 3: pita spektrum tipis, efek garis foil holografik */
+    repeating-linear-gradient(
+      115deg,
+      rgba(14, 116, 144, 0.16) 0px,
+      rgba(157, 23, 77, 0.16) 14px,
+      rgba(77, 124, 15, 0.16) 28px,
+      rgba(91, 33, 182, 0.16) 42px,
+      rgba(14, 116, 144, 0.16) 56px
+    );
+  background-color: #0a0a0a;
+  /* overlay jauh lebih gelap daripada screen, jadi gradasi tidak
+     menyilaukan kartu tapi tetap terasa. */
+  background-blend-mode: overlay, overlay, soft-light;
+  filter: blur(14px) saturate(115%) brightness(0.7);
+  opacity: 0;
+  /* Pseudo-element tidak mewarisi backface-visibility dari induknya,
+     jadi perlu disembunyikan sendiri agar tidak bocor saat kartu dibalik. */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: opacity 500ms ease-in-out;
+}
+
+/* Animated iridescent shimmer sweep (runs continuously when hovered) */
+@keyframes holo-sweep {
+  0% { background-position: 0% 50%, 0% 50%, 0% 50%; }
+  100% { background-position: 200% 50%, 150% 50%, 100% 50%; }
+}
+
+/* Hanya saat kursor di atas area kartu/foto (bukan saat di tali/lanyard).
+   Gradasi holografik baru muncul di sini, dengan transisi mulus 500ms.
+   opacity 0.6 supaya efeknya gelap dan tidak menyilaukan mata. */
+.id-card-front-face:hover::before,
+.id-card-front-face.id-card-glow-active::before,
+.id-card-assembly.id-card-dragging .id-card-front-face::before {
+  opacity: 0.6;
+  animation: holo-sweep 3s linear infinite;
+  background-size: 200% 200%, 150% 150%, 100% 100%;
+}
+
+/* ===== BORDER: tepi foil holografik, warna senada dengan gradasi utama =====
+   Default opacity 0, jadi kartu benar-benar polos gelap sampai di-hover. */
+.id-card-front-face::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+  border: 1px solid transparent;
+  background:
+    conic-gradient(from 180deg at var(--foil-x, 50%) var(--foil-y, 50%),
+      #22d3ee,
+      #f472b6 20%,
+      #bef264 40%,
+      #a855f7 60%,
+      #22d3ee 80%,
+      #f472b6) border-box;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.3),
+    0 0 10px rgba(34, 211, 238, 0.3),
+    0 0 22px rgba(244, 114, 182, 0.24),
+    0 0 38px rgba(168, 85, 247, 0.22);
+  opacity: 0;
+  transition: opacity 500ms ease-in-out, box-shadow 500ms ease-in-out;
+}
+
+/* Border foil juga gradasi warna, jadi ikut disembunyikan sampai hover */
+.id-card-front-face:hover::after,
+.id-card-front-face.id-card-glow-active::after,
+.id-card-assembly.id-card-dragging .id-card-front-face::after {
+  opacity: 0.55;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.22),
+    0 0 10px rgba(14, 116, 144, 0.28),
+    0 0 20px rgba(157, 23, 77, 0.22),
+    0 0 32px rgba(91, 33, 182, 0.2);
+}
+
+/* Foto subjek (PNG transparan) di z-index: 2 — paling atas.
+   width 100% + object-fit: cover membuat foto memenuhi kartu tanpa celah
+   di sisi kanan/kiri. object-position: top menjaga agar kepala tidak
+   pernah terpotong — sisa tinggi yang melebihi kartu dipotong dari
+   bawah (area kaki), bukan dari kepala.
+   Tidak ada background-color karena PNG harus tembus transparan supaya
+   spotlight di z-1 tetap terlihat dari balik subjek.
+   pointer-events: none agar hover jatuh ke card face (memicu glow). */
+.id-card-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  background-color: transparent;
+  pointer-events: none;
+  /* backface-visibility tidak diwarisi, jadi foto harus disembunyikan
+     sendiri. Tanpa ini foto ikut terlihat saat kartu dibalik. */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ===== CIRCULAR SPOTLIGHT: cahaya bulat mengikuti kursor saat hover =====
+   z-index: 1 — DI BAWAH foto (z-index: 2).
+   Tetap di dalam .id-card-front-face yang overflow: hidden, jadi cahaya
+   dipotong rapi di tepi kartu dan tidak pernah keluar dari area kartu.
+   opacity: 0 saat normal, hanya jadi 1 saat kursor di atas area kartu/foto. */
+.id-card-spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle 150px at var(--foil-x, 50%) var(--foil-y, 50%),
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(14, 116, 144, 0.32) 18%,
+    rgba(157, 23, 77, 0.22) 36%,
+    rgba(91, 33, 182, 0.14) 54%,
+    transparent 76%
+  );
+  transition: opacity 500ms ease-in-out;
+}
+
+.id-card-front-face:hover .id-card-spotlight,
+.id-card-front-face.id-card-glow-active .id-card-spotlight {
+  opacity: 0.55;
+}
+
+/* Sisi belakang juga tidak memakai layer spotlight di atas permukaan;
+   cahayanya datang dari halo di belakang kartu. */
+.id-card-back-face::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.05), transparent 22% 74%, rgba(255, 255, 255, 0.02));
+  opacity: 0;
+  transition: opacity 620ms ease-out;
+}
+
+.id-card-assembly:hover .id-card-back-face::after,
+.id-card-assembly.id-card-dragging .id-card-back-face::after {
+  opacity: 1;
+  transition-duration: 180ms;
+}
+
+.id-card-photo-reveal {
+  z-index: 2;
+}
+
+.id-card-flip-container {
+  transition: filter 180ms ease-out;
+}
+
+/* Saat drag, seluruh ID card (frame + foto) harus bergerak sebagai satu objek.
+   Filter dimatikan selama drag supaya foto tidak tampak terpisah dari frame,
+   dan supaya konteks 3d tetap utuh saat kartu dibalik. */
+.id-card-assembly.id-card-dragging .id-card-floating-card,
+.id-card-assembly.id-card-dragging .id-card-front-face,
+.id-card-assembly.id-card-dragging .id-card-back-face,
+.id-card-assembly.id-card-dragging .id-card-flip-container,
+.id-card-assembly.id-card-dragging .id-card-photo-reveal {
+  filter: none;
+  backdrop-filter: none;
+  will-change: transform;
+}
+
+.id-card-dragging .id-lanyard-strap {
+  transition: border-radius 160ms ease-out;
+  border-radius: 0 0 7px 7px;
+}
+
+/* Penting: filter TIDAK boleh dipasang pada .id-card-front-face / back-face
+   maupun pada leluhurnya. Filter membuat elemen itu jadi containing block
+   yang meratakan preserve-3d, sehingga backface-visibility ikut gagal dan
+   foto depan tetap terlihat saat kartu dibalik.
+   Efek gerak dibuat dengan box-shadow, yang tidak memengaruhi konteks 3D. */
+.id-card-in-motion .id-card-front-face,
+.id-card-in-motion .id-card-back-face {
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.75),
+    0 0 3px rgba(0, 0, 0, 0.35);
+}
+
+.id-card-in-motion .id-lanyard-strap {
+  filter: drop-shadow(0 1px 3px rgba(215, 164, 175, 0.2));
+}
+
+.id-card-spinning .id-card-front-face,
+.id-card-spinning .id-card-back-face {
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.75),
+    -9px 0 12px rgba(215, 164, 175, 0.18),
+    9px 0 12px rgba(215, 164, 175, 0.18);
+}
+
+.id-card-spinning .id-lanyard-strap {
+  filter: drop-shadow(0 2px 5px rgba(215, 164, 175, 0.24));
+}
+
+.id-card-back-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.id-card-back-logo-mark {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border: 1px solid rgba(209, 148, 162, 0.55);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(242, 201, 210, 0.24), transparent 62%),
+    radial-gradient(circle, rgba(20, 17, 21, 0.9), rgba(8, 7, 9, 0.95));
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 0 22px rgba(209, 148, 162, 0.14),
+    0 0 26px rgba(209, 148, 162, 0.18);
+  color: #f2c9d2;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 30px;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(226, 150, 180, 0.5);
+}
+
+.id-card-back-logo-text {
+  color: rgba(242, 211, 219, 0.62);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.id-card-back-face > * {
+  position: relative;
+  z-index: 2;
+}
+
+.id-card-logo-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 7px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.id-card-logo-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 2px 5px;
+  border: 1px solid rgba(209, 148, 162, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.06), transparent 60%),
+    radial-gradient(circle at 50% 20%, rgba(209, 148, 162, 0.14), transparent 70%);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.id-card-logo-cell > svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 8px rgba(226, 150, 180, 0.35));
+}
+
+.id-card-logo-name {
+  color: rgba(242, 211, 219, 0.72);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 7px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.id-card-barcode {
+  width: 70%;
+  height: 58px;
+  margin-block: 24px 18px;
+  flex: none;
+  border: 6px solid rgba(10, 10, 12, 0.8);
+  background: repeating-linear-gradient(90deg, #efdbdf 0 2px, transparent 2px 4px, #efdbdf 4px 5px, transparent 5px 9px);
+  box-shadow: 0 0 24px rgba(215, 164, 175, 0.12);
+}
+
+@media (max-width: 360px) {
+  .id-lanyard-strap {
+    height: calc(100% - 4px);
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .id-card-floating-card {
+    animation: none;
+  }
+}
+
+/* Dot Matrix Wave: kanvas fill section, dipotong agar tidak bocor keluar.
+   Teks + ID Card ada di relative z-10 di atasnya. */
+.about-screen-section {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ===== DEKORASI ABOUT ME =====
+   Aura: tiga blob besar yang bergerak sangat lambat di belakang konten.
+   Murni dekoratif, tidak pernah menahan interaksi. */
+.about-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.about-aurora span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  /* Tanpa filter: blur() — radial-gradient di bawah sudah halus sendiri,
+     dan blur 90px di elemen besar ini mahal sekali per frame. */
+  will-change: transform;
+  opacity: 0.22;
+}
+
+.about-aurora span:nth-child(1) {
+  top: -12%;
+  left: -6%;
+  width: 46%;
+  height: 58%;
+  background: radial-gradient(ellipse closest-side, #d194a2 0%, rgba(209, 148, 162, 0.35) 45%, transparent 100%);
+  animation: aura-drift-a 26s ease-in-out infinite;
+}
+
+.about-aurora span:nth-child(2) {
+  bottom: -18%;
+  right: -4%;
+  width: 44%;
+  height: 54%;
+  background: radial-gradient(ellipse closest-side, #a855f7 0%, rgba(168, 85, 247, 0.32) 45%, transparent 100%);
+  animation: aura-drift-b 32s ease-in-out infinite;
+}
+
+.about-aurora span:nth-child(3) {
+  top: 24%;
+  left: 42%;
+  width: 34%;
+  height: 40%;
+  background: radial-gradient(ellipse closest-side, #22d3ee 0%, rgba(34, 211, 238, 0.3) 45%, transparent 100%);
+  opacity: 0.12;
+  animation: aura-drift-c 38s ease-in-out infinite;
+}
+
+@keyframes aura-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, 5%, 0) scale(1.12); }
+}
+
+@keyframes aura-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-7%, -4%, 0) scale(0.92); }
+}
+
+@keyframes aura-drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); }
+  50% { transform: translate3d(5%, -6%, 0) scale(1.1); }
+}
+
+/* Border gradien tipis yang berputar pelan mengelilingi kotak About Me.
+   Dijamin ::before tidak menutupi isi: teknik padding-box + mask
+   hanya menyisakan cincin 1px di tepi. */
+@property --panel-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.about-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.about-panel::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--panel-angle),
+    transparent 0deg,
+    rgba(209, 148, 162, 0.55) 55deg,
+    rgba(168, 85, 247, 0.45) 105deg,
+    transparent 175deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  content: '';
+  pointer-events: none;
+  animation: panel-spin 11s linear infinite;
+}
+
+@keyframes panel-spin {
+  to { --panel-angle: 360deg; }
+}
+
+/* Halo sangat tipis di dalam kotak supaya tidak terasa datar. */
+.about-panel::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 0%,
+    rgba(209, 148, 162, 0.09) 0%,
+    transparent 70%
+  );
+  content: '';
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-aurora span,
+  .about-panel::before {
+    animation: none;
+  }
+}
+
+/* Kanvas hanya dekoratif: tidak boleh menahan klik maupun hover teks. */
+.diagonal-dots {
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-height: 600px) and (min-width: 768px) {
+  .about-screen-section {
+    padding-block: 0.5rem;
+  }
+
+  .about-screen-grid {
+    min-height: calc(100svh - 1rem);
+  }
+
+  .about-id-card-stage {
+    min-height: 0;
+  }
+
+  .id-lanyard-pair {
+    height: 5rem;
+  }
+
+  .id-lanyard-strap {
+    height: 76px;
+  }
+
+  .id-card-flip-container {
+    height: 21rem;
+  }
+}
+
+@keyframes sway-1 {
+  0%, 100% { transform: rotate(-2deg) translateX(0); }
+  50% { transform: rotate(2deg) translateX(8px); }
+}
+
+@keyframes sway-2 {
+  0%, 100% { transform: rotate(1.5deg) translateX(0); }
+  50% { transform: rotate(-1.5deg) translateX(-6px); }
+}
+
+.animate-sway-1 {
+  animation: sway-1 4s ease-in-out infinite;
+}
+
+.animate-sway-2 {
+  animation: sway-2 3.5s ease-in-out infinite;
+}
+
+/* Animasi bunga otonom — tidak mengikuti kursor */
+@keyframes bloomSway {
+  0%, 100% { transform: rotate(-2.2deg) translateX(0); }
+  50% { transform: rotate(2.2deg) translateX(5px); }
+}
+
+@keyframes stemSway {
+  0%, 100% { transform: rotate(-1.5deg) translateX(0); }
+  50% { transform: rotate(1.5deg) translateX(-3px); }
+}
+
+@keyframes petalBloom {
+  0%, 100% { transform: scale(0.87) rotate(-1.1deg); }
+  50% { transform: scale(1.05) rotate(1.1deg); }
+}
+
+.bloom-sway,
+.stem-sway,
+.petal-bloom {
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  transform-box: fill-box;
+  will-change: transform;
+}
+
+.bloom-sway {
+  transform-origin: 50% 100%;
+  animation-name: bloomSway;
+}
+
+.stem-sway {
+  transform-origin: 50% 0%;
+  animation-name: stemSway;
+}
+
+.petal-bloom {
+  transform-origin: 50% 50%;
+  animation-name: petalBloom;
+}
+
+@keyframes roseBranchSway {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-0.65deg); }
+  50% { transform: translate3d(5px, -2px, 0) rotate(0.65deg); }
+}
+
+@keyframes rosePetalsOpen {
+  0% { opacity: 0.15; transform: scale(0.22) rotate(var(--flower-angle)); }
+  20% { opacity: 1; transform: scale(1.08) rotate(var(--flower-angle)); }
+  36%, 72% { opacity: 0.92; transform: scale(0.97) rotate(var(--flower-angle)); }
+  100% { opacity: 1; transform: scale(1.03) rotate(var(--flower-angle)); }
+}
+
+@keyframes roseHeadSway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.blooming-rose-branch {
+  position: absolute;
+  inset: 0;
+  transform-origin: 78% 20%;
+  animation: roseBranchSway 18s ease-in-out infinite;
+  opacity: 0.86;
+  will-change: transform;
+}
+
+.rose-branch-trunk,
+.rose-branch-stem {
+  position: absolute;
+  display: block;
+  border-radius: 100%;
+  background: linear-gradient(180deg, #82936c 0%, #536745 30%, #394b36 68%, #29372c 100%);
+  box-shadow: 0 1px 4px rgba(8, 4, 3, 0.45);
+  transform-origin: left center;
+}
+
+.rose-branch-trunk {
+  left: -4%;
+  top: 58%;
+  width: 112%;
+  height: 8px;
+  transform: rotate(-16deg);
+}
+
+.rose-branch-stem {
+  height: 4px;
+  transform: rotate(var(--stem-angle));
+}
+
+.rose-branch-stem::after {
+  position: absolute;
+  right: -2px;
+  top: -1px;
+  width: 7px;
+  height: 4px;
+  content: '';
+  border-radius: 100%;
+  background: #71845d;
+}
+
+.branch-rose-position {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: clamp(60px, var(--flower-size-desktop), 110px);
+  height: clamp(60px, var(--flower-size-desktop), 110px);
+}
+
+@media (max-width: 640px) {
+  .branch-rose-position {
+    width: clamp(54px, var(--flower-size-mobile), 88px);
+    height: clamp(54px, var(--flower-size-mobile), 88px);
+  }
+}
+
+.branch-rose-bloom,
+.branch-rose-flower {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.branch-rose-bloom {
+  opacity: 0;
+  transform: scale(0.22) rotate(var(--flower-angle));
+  animation: rosePetalsOpen 14s ease-in-out var(--bloom-delay) infinite;
+  will-change: transform, opacity;
+}
+
+.branch-rose-flower {
+  animation: roseHeadSway 7s ease-in-out infinite;
+}
+
+.branch-rose-petal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 58% 58% 46% 46%;
+  background: radial-gradient(ellipse at 34% 28%, #fff0f4 0%, #f5c4d1 32%, #e985a1 69%, #b84f70 100%);
+  box-shadow: inset 0 1px 3px rgba(255, 247, 249, 0.42), 0 1px 4px rgba(18, 5, 10, 0.2);
+  transform: translate(-50%, -94%) rotate(var(--petal-angle)) scale(var(--petal-scale));
+  transform-origin: 50% 94%;
+}
+
+.branch-rose-petal-outer {
+  width: 49%;
+  height: 67%;
+  --petal-scale: 1;
+}
+
+.branch-rose-petal-inner {
+  width: 37%;
+  height: 54%;
+  --petal-scale: 0.92;
+  background: radial-gradient(ellipse at 34% 24%, #fff4f6 0%, #f7c7d3 34%, #e77a98 76%, #c45b79 100%);
+}
+
+.branch-rose-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16%;
+  height: 16%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f9e7b8 0%, #d9a466 62%, #9f6148 100%);
+  box-shadow: 0 0 5px rgba(255, 222, 208, 0.45);
+  transform: translate(-50%, -50%);
+}
+
+/* Mawar PNG: batang berakar di bawah, kepala bunga mengayun lebih lebar */
+@keyframes roseStem {
+  0%, 100% { transform: rotate(-0.8deg); }
+  50% { transform: rotate(0.8deg); }
+}
+
+@keyframes roseCrown {
+  0%, 100% { transform: rotate(-1.7deg) translateX(0); }
+  50% { transform: rotate(1.7deg) translateX(3px); }
+}
+
+@keyframes roseBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .bloom-sway,
+  .stem-sway,
+  .petal-bloom,
+  .blooming-rose-branch,
+  .branch-rose-bloom,
+  .branch-rose-flower,
+  .animate-sway-1,
+  .animate-sway-2 {
+    animation: none;
+  }
+
+  .branch-rose-bloom {
+    opacity: 1;
+    transform: scale(1) rotate(var(--flower-angle));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rose-root,
+  .rose-upper,
+  .rose-head,
+  .rose-bloom-outer,
+  .rose-bloom-inner {
+    animation: none;
+  }
 }
