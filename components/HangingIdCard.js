@@ -103,6 +103,13 @@ export default function HangingIdCard({ photoUrl }) {
   const previousY = useRef(0);
   const swing = useRef(0);
   const entrancePlayed = useRef(false);
+  // Pointermove bisa firing ratusan kali per detik. Tanpa penahan, tiap
+  // event memicu set() pada kartu dan tali sehingga transform dihitung
+  // ulang jauh lebih cepat dari layar bisa menampilkan. Dua ref ini
+  // menahan semua update ke satu requestAnimationFrame, jadi transform
+  // hanya dihitung sekali per frame.
+  const pendingPointer = useRef(null);
+  const pointerFrame = useRef(0);
   const [isBusy, setIsBusy] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isGlowing, setIsGlowing] = useState(false);
@@ -126,6 +133,25 @@ export default function HangingIdCard({ photoUrl }) {
       skewX: clamp(bend, -18, 18),
     };
   }, []);
+
+  // Terapkan posisi terakhir yang tersimpan. Dipanggil dari dalam rAF,
+  // jadi set() hanya berjalan satu kali per frame.
+  const applyPointerPose = useCallback(() => {
+    pointerFrame.current = 0;
+    const pose = pendingPointer.current;
+    if (!pose) return;
+    cardControls.set({ x: 0, y: pose.offsetY, rotateZ: pose.angle });
+    lanyardControls.set(strapPose(pose.offsetY, pose.angle, pose.bend, pose.extraStretch));
+  }, [cardControls, lanyardControls, strapPose]);
+
+  const schedulePointerPose = useCallback(
+    (pose) => {
+      pendingPointer.current = pose;
+      if (pointerFrame.current) return;
+      pointerFrame.current = window.requestAnimationFrame(applyPointerPose);
+    },
+    [applyPointerPose],
+  );
 
   const strapFromFrames = useCallback(
     (yFrames, angleFrames, bendFrames, stretchFrames, length) =>
@@ -289,6 +315,16 @@ export default function HangingIdCard({ photoUrl }) {
     lanyardControls.set({ rotateZ: 0, rotateY: 0, scaleX: 1, scaleY: 1, skewX: 0 });
   }, [isInView, cardControls, lanyardControls, flipControls, playEntrance, strapLength]);
 
+  // Batalkan frame pointer yang masih tertunda saat komponen dilepas,
+  // supaya tidak ada set() yang berjalan pada elemen yang sudah hilang.
+  useEffect(
+    () => () => {
+      if (pointerFrame.current) window.cancelAnimationFrame(pointerFrame.current);
+      pointerFrame.current = 0;
+    },
+    [],
+  );
+
   return (
     <motion.div
       ref={assemblyRef}
@@ -313,17 +349,6 @@ export default function HangingIdCard({ photoUrl }) {
         }}
         onPointerMove={(event) => {
           if (event.pointerType !== 'mouse') return;
-          const bounds = event.currentTarget.getBoundingClientRect();
-          const xPct = `${((event.clientX - bounds.left) / bounds.width) * 100}%`;
-          const yPct = `${((event.clientY - bounds.top) / bounds.height) * 100}%`;
-          event.currentTarget.style.setProperty('--foil-x', xPct);
-          event.currentTarget.style.setProperty('--foil-y', yPct);
-          // Juga set di front-face langsung biar pseudo-element pasti dapet
-          const frontFace = event.currentTarget.querySelector('.id-card-front-face');
-          if (frontFace) {
-            frontFace.style.setProperty('--foil-x', xPct);
-            frontFace.style.setProperty('--foil-y', yPct);
-          }
 
           const start = origin.current;
           if (!start || isBusy) return;
@@ -354,13 +379,21 @@ export default function HangingIdCard({ photoUrl }) {
           const bend = clamp(-deltaX * 0.1 + angle * 0.55 + speed * 0.06, -18, 18);
           const extraStretch = clamp(speed * 0.004, -0.03, 0.12);
 
-          cardControls.set({ x: 0, y: offsetY, rotateZ: angle });
-          lanyardControls.set(strapPose(offsetY, angle, bend, extraStretch));
+          schedulePointerPose({ offsetY, angle, bend, extraStretch });
         }}
         onPointerUp={(event) => {
           const start = origin.current;
           origin.current = null;
           event.currentTarget.releasePointerCapture?.(event.pointerId);
+
+          // Frame terakhir sebelum pointer dilepas perlu langsung diterapkan,
+          // kalau tidak kartu berhenti sedikit di belakang posisi kursor.
+          if (pointerFrame.current) {
+            window.cancelAnimationFrame(pointerFrame.current);
+            applyPointerPose();
+          }
+          pendingPointer.current = null;
+
           if (!start) return;
 
           if (!moved.current) {
@@ -403,21 +436,12 @@ export default function HangingIdCard({ photoUrl }) {
         onClick={() => {
           if (ignoreClick.current) return;
         }}
-        onPointerLeave={(event) => {
+        onPointerLeave={() => {
           setIsGlowing(false);
-          event.currentTarget.style.setProperty('--foil-x', '50%');
-          event.currentTarget.style.setProperty('--foil-y', '50%');
-          const frontFace = event.currentTarget.querySelector('.id-card-front-face');
-          if (frontFace) {
-            frontFace.style.setProperty('--foil-x', '50%');
-            frontFace.style.setProperty('--foil-y', '50%');
-          }
         }}
         aria-label="Balik kartu"
         style={{
           transformStyle: 'preserve-3d',
-          '--foil-x': '50%',
-          '--foil-y': '50%',
         }}
         className="motion-button flex touch-none select-none flex-col items-center cursor-grab active:cursor-grabbing"
       >

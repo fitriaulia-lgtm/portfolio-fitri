@@ -249,7 +249,7 @@ const Timeline = () => {
                   : 'md:col-start-2 md:row-start-1'
               }
             >
-              <div className="rounded-2xl border border-white/10 bg-[#121115]/70 p-5 transition-colors duration-300 hover:border-white/25">
+              <div className="activity-card rounded-2xl border border-white/10 bg-[#121115]/70 p-5">
                 <div
                   className={`flex flex-wrap items-center gap-3 ${
                     isLeft ? 'md:justify-end' : ''

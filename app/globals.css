@@ -46,7 +46,17 @@ body {
   isolation: isolate;
 }
 
-/* Halo ambient di belakang kartu (z-index: -1): dusty pink, lavender, dan cyan rose. */
+/* Halo ambient di belakang kartu (z-index: -1): dusty pink, lavender, dan cyan rose.
+
+   Dulu lima radial-gradient ditumpuk lalu di-filter blur(38px). Filter
+   blur membuat browser menyimpan salinan besar dan menghitung ulang
+   setiap kali opacity berubah — itu sumber lag terbesar di section ini.
+
+   Sekarang blur dihapus dan lima gradien dikurangi jadi satu. Gradien
+   radial sudah cukup lembut tanpa blur, jadi tampilan hampir sama,
+   tapi tidak ada filter yang perlu dihitung ulang.
+   Cahaya utama dipusatkan, tidak lagi mengikuti kursor, supaya hover
+   tidak memicu repaint. */
 .id-card-assembly::before {
   position: absolute;
   top: 34%;
@@ -56,22 +66,21 @@ body {
   height: 58%;
   content: '';
   transform: translateX(-50%);
-  background:
-    radial-gradient(circle 200px at var(--foil-x, 50%) var(--foil-y, 50%), rgba(255, 243, 247, 0.34) 0%, rgba(233, 189, 200, 0.2) 34%, rgba(168, 152, 214, 0.12) 58%, transparent 78%),
-    radial-gradient(ellipse at 40% 42%, rgba(226, 178, 189, 0.3) 0%, rgba(209, 148, 162, 0.16) 38%, transparent 70%),
-    radial-gradient(ellipse at 64% 56%, rgba(168, 152, 214, 0.22) 0%, rgba(139, 122, 173, 0.12) 40%, transparent 72%),
-    radial-gradient(ellipse at 54% 72%, rgba(120, 190, 200, 0.14) 0%, transparent 62%),
-    radial-gradient(ellipse at 30% 66%, rgba(232, 160, 184, 0.16) 0%, transparent 58%);
-  filter: blur(38px);
+  background: radial-gradient(
+    ellipse 62% 60% at 50% 50%,
+    rgba(255, 243, 247, 0.3) 0%,
+    rgba(226, 178, 189, 0.17) 38%,
+    rgba(168, 152, 214, 0.1) 58%,
+    transparent 80%
+  );
   pointer-events: none;
   opacity: 0.78;
-  transition: opacity 620ms ease-out, transform 620ms ease-out;
+  transition: opacity 620ms ease-out;
 }
 
 .id-card-assembly:hover::before,
 .id-card-assembly.id-card-dragging::before {
   opacity: 1;
-  transform: translateX(-50%) scale(1.05);
   transition-duration: 180ms;
 }
 
@@ -204,8 +213,12 @@ body {
     0 25px 60px rgba(0, 0, 0, 0.75);
 }
 
+/* backdrop-filter dihapus. Element ini memakai background semi-transparan
+   di dalam area preserve-3d, jadi blur 18px + saturate dihitung ulang
+   tiap frame padahal tampilan luar hampir tidak berubah.
+   Efek kaca diganti warna solid gelap yang hampir sama. */
 .id-card-back-face {
-  backdrop-filter: blur(18px) saturate(145%);
+  background-color: rgba(16, 16, 20, 0.92);
 }
 
 /* Default: hitam/gelap polos, gradasi holografik TIDAK sama sekali terlihat.
@@ -232,12 +245,16 @@ body {
     linear-gradient(155deg, rgba(33, 31, 37, 0.82), rgba(13, 14, 18, 0.86));
 }
 
-/* ===== HOLOGRAPHIC / IRIDESCENT GLASS GLOW =====
-   Palet pelangi holografik: cyan/toska -> pink/magenta -> lime -> ungu neon.
-   Menempati z-index: 0 (latar kartu), DI BAWAH foto (z-index: 2).
-   Tanpa mix-blend-mode supaya foto tetap bersih.
-   Default opacity: 0 — gradasi sama sekali tidak kelihatan.
-   Transisi 500ms supaya muncul dan hilang dengan mulus. */
+/* ===== GLOW PUTIH BULAT =====
+   Dulu efek ini gradasi holografik berlapis (linear + radial + repeating
+   gradient, tiga blend mode, filter blur, dan animasi sweep 3 detik).
+   Semua itu dipaksa hitung ulang tiap frame sehingga kursor menggeser
+   terasa berat.
+
+   Sekarang diganti satu radial-gradient putih polos,.centered, tanpa
+   filter, tanpa blend mode, tanpa animasi. Yang berubah hanya opacity,
+   jadi tidak ada pixel yang perlu dihitung ulang tiap frame.
+   tetap z-index: 0 (latar kartu), DI BAWAH foto (z-index: 2). */
 .id-card-front-face::before {
   position: absolute;
   inset: 0;
@@ -245,68 +262,65 @@ body {
   border-radius: inherit;
   content: '';
   pointer-events: none;
-  background:
-    /* Layer 1: sebaran warna utama cyan -> pink -> lime -> ungu.
-       Hex dipakai dari palet 700/800 supaya gelap di atas latar hitam,
-       hue-nya tetap terbaca sebagai holografik tapi tidak menyilaukan. */
-    linear-gradient(
-      125deg,
-      #0e7490 0%,
-      #9d174d 32%,
-      #4d7c0f 58%,
-      #5b21b6 82%,
-      #0e7490 100%
-    ),
-    /* Layer 2: kilau radial lembut di sekitar kursor, intensitas rendah */
-    radial-gradient(
-      circle 220px at var(--foil-x, 50%) var(--foil-y, 50%),
-      rgba(255, 255, 255, 0.22) 0%,
-      rgba(14, 116, 144, 0.24) 24%,
-      rgba(157, 23, 77, 0.2) 48%,
-      rgba(91, 33, 182, 0.16) 70%,
-      transparent 88%
-    ),
-    /* Layer 3: pita spektrum tipis, efek garis foil holografik */
-    repeating-linear-gradient(
-      115deg,
-      rgba(14, 116, 144, 0.16) 0px,
-      rgba(157, 23, 77, 0.16) 14px,
-      rgba(77, 124, 15, 0.16) 28px,
-      rgba(91, 33, 182, 0.16) 42px,
-      rgba(14, 116, 144, 0.16) 56px
-    );
-  background-color: #0a0a0a;
-  /* overlay jauh lebih gelap daripada screen, jadi gradasi tidak
-     menyilaukan kartu tapi tetap terasa. */
-  background-blend-mode: overlay, overlay, soft-light;
-  filter: blur(14px) saturate(115%) brightness(0.7);
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 50%,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0) 80%
+  );
   opacity: 0;
   /* Pseudo-element tidak mewarisi backface-visibility dari induknya,
      jadi perlu disembunyikan sendiri agar tidak bocor saat kartu dibalik. */
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transition: opacity 500ms ease-in-out;
+  transition: opacity 400ms ease-in-out;
 }
 
-/* Animated iridescent shimmer sweep (runs continuously when hovered) */
-@keyframes holo-sweep {
-  0% { background-position: 0% 50%, 0% 50%, 0% 50%; }
-  100% { background-position: 200% 50%, 150% 50%, 100% 50%; }
+/* Kartu timeline: cahaya putih bulat saat kursor diarahkan.
+   Dipakai radial-gradient pada ::after, bukan box-shadow, karena box-shadow
+   dengan blur besar memicu repaint tiap hover dan terasa berat.
+   Yang dianimasikan hanya opacity, jadi tidak ada filter yang dihitung ulang. */
+.activity-card {
+  position: relative;
+  transition: border-color 300ms ease;
 }
 
-/* Hanya saat kursor di atas area kartu/foto (bukan saat di tali/lanyard).
-   Gradasi holografik baru muncul di sini, dengan transisi mulus 500ms.
-   opacity 0.6 supaya efeknya gelap dan tidak menyilaukan mata. */
+.activity-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.05) 45%,
+    rgba(255, 255, 255, 0) 75%
+  );
+}
+
+.activity-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.activity-card:hover::after {
+  opacity: 1;
+}
+
+/* Cahaya bulat putih muncul hanya saat kursor di atas area kartu/foto
+   (bukan saat di tali/lanyard). Hanya opacity yang dianimasikan. */
 .id-card-front-face:hover::before,
 .id-card-front-face.id-card-glow-active::before,
 .id-card-assembly.id-card-dragging .id-card-front-face::before {
-  opacity: 0.6;
-  animation: holo-sweep 3s linear infinite;
-  background-size: 200% 200%, 150% 150%, 100% 100%;
+  opacity: 0.85;
 }
 
-/* ===== BORDER: tepi foil holografik, warna senada dengan gradasi utama =====
-   Default opacity 0, jadi kartu benar-benar polos gelap sampai di-hover. */
+/* ===== BORDER: garis putih tipis =====
+   Dulu conic-gradient berputar mengikuti posisi kursor plus empat
+   box-shadow berwarna. Diganti garis putih statis supaya tidak ada
+   yang dihitung ulang saat kursor bergerak. */
 .id-card-front-face::after {
   position: absolute;
   inset: 0;
@@ -314,34 +328,16 @@ body {
   border-radius: inherit;
   content: '';
   pointer-events: none;
-  border: 1px solid transparent;
-  background:
-    conic-gradient(from 180deg at var(--foil-x, 50%) var(--foil-y, 50%),
-      #22d3ee,
-      #f472b6 20%,
-      #bef264 40%,
-      #a855f7 60%,
-      #22d3ee 80%,
-      #f472b6) border-box;
-  box-shadow:
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.3),
-    0 0 10px rgba(34, 211, 238, 0.3),
-    0 0 22px rgba(244, 114, 182, 0.24),
-    0 0 38px rgba(168, 85, 247, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   opacity: 0;
-  transition: opacity 500ms ease-in-out, box-shadow 500ms ease-in-out;
+  transition: opacity 400ms ease-in-out;
 }
 
-/* Border foil juga gradasi warna, jadi ikut disembunyikan sampai hover */
+/* Border ikut muncul saat hover */
 .id-card-front-face:hover::after,
 .id-card-front-face.id-card-glow-active::after,
 .id-card-assembly.id-card-dragging .id-card-front-face::after {
-  opacity: 0.55;
-  box-shadow:
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.22),
-    0 0 10px rgba(14, 116, 144, 0.28),
-    0 0 20px rgba(157, 23, 77, 0.22),
-    0 0 32px rgba(91, 33, 182, 0.2);
+  opacity: 1;
 }
 
 /* Foto subjek (PNG transparan) di z-index: 2 — paling atas.
@@ -368,11 +364,12 @@ body {
   -webkit-backface-visibility: hidden;
 }
 
-/* ===== CIRCULAR SPOTLIGHT: cahaya bulat mengikuti kursor saat hover =====
+/* ===== CAHAYA BULAT DI ATAS KARTU =====
    z-index: 1 — DI BAWAH foto (z-index: 2).
    Tetap di dalam .id-card-front-face yang overflow: hidden, jadi cahaya
    dipotong rapi di tepi kartu dan tidak pernah keluar dari area kartu.
-   opacity: 0 saat normal, hanya jadi 1 saat kursor di atas area kartu/foto. */
+   Dipusatkan (bukan mengikuti kursor) supaya tidak ada repaint
+   setiap kali mouse bergerak. */
 .id-card-spotlight {
   position: absolute;
   inset: 0;
@@ -381,19 +378,17 @@ body {
   pointer-events: none;
   opacity: 0;
   background: radial-gradient(
-    circle 150px at var(--foil-x, 50%) var(--foil-y, 50%),
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(14, 116, 144, 0.32) 18%,
-    rgba(157, 23, 77, 0.22) 36%,
-    rgba(91, 33, 182, 0.14) 54%,
-    transparent 76%
+    ellipse 75% 65% at 50% 45%,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 78%
   );
-  transition: opacity 500ms ease-in-out;
+  transition: opacity 400ms ease-in-out;
 }
 
 .id-card-front-face:hover .id-card-spotlight,
 .id-card-front-face.id-card-glow-active .id-card-spotlight {
-  opacity: 0.55;
+  opacity: 1;
 }
 
 /* Sisi belakang juga tidak memakai layer spotlight di atas permukaan;
@@ -631,35 +626,33 @@ body {
   animation: aura-drift-c 38s ease-in-out infinite;
 }
 
+/* Hanya translasi, tanpa scale.
+   scale() pada elemen selebar section memaksa browser membuat ulang
+   tekstur gradiennya di ukuran baru, jadi tiap frame_apply harus
+   raster ulang. translate3d bisa ditangani compositor tanpa itu. */
 @keyframes aura-drift-a {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(6%, 5%, 0) scale(1.12); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(6%, 5%, 0); }
 }
 
 @keyframes aura-drift-b {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
-  50% { transform: translate3d(-7%, -4%, 0) scale(0.92); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-7%, -4%, 0); }
 }
 
 @keyframes aura-drift-c {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); }
-  50% { transform: translate3d(5%, -6%, 0) scale(1.1); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(5%, -6%, 0); }
 }
 
-/* Border gradien tipis yang berputar pelan mengelilingi kotak About Me.
-   Dijamin ::before tidak menutupi isi: teknik padding-box + mask
-   hanya menyisakan cincin 1px di tepi. */
-@property --panel-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
+/* Border gradien tipis mengelilingi kotak About Me.
+   Dulu sudutnya diputar lewat @property --panel-angle dengan animasi
+   11 detik. Properti kustom terregistrasi memaksa conic-gradient dihitung
+   ulang tiap frame, ditambah mask composite — dua operasi mahal sekaligus
+   di area sebesar panel ini.
 
-.about-panel {
-  position: relative;
-  isolation: isolate;
-}
-
+   Sekarang gradasi-nya diam di satu sudut. Bentuk dan warnanya sama,
+   tidak ada yang perlu dihitung ulang. */
 .about-panel::before {
   position: absolute;
   inset: 0;
@@ -667,7 +660,7 @@ body {
   padding: 1px;
   border-radius: inherit;
   background: conic-gradient(
-    from var(--panel-angle),
+    from 30deg,
     transparent 0deg,
     rgba(209, 148, 162, 0.55) 55deg,
     rgba(168, 85, 247, 0.45) 105deg,
@@ -684,11 +677,11 @@ body {
   mask-composite: exclude;
   content: '';
   pointer-events: none;
-  animation: panel-spin 11s linear infinite;
 }
 
-@keyframes panel-spin {
-  to { --panel-angle: 360deg; }
+.about-panel {
+  position: relative;
+  isolation: isolate;
 }
 
 /* Halo sangat tipis di dalam kotak supaya tidak terasa datar. */
