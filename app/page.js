@@ -33,7 +33,7 @@ export default function Home() {
           <LoadingScreen key="loading" onComplete={() => setIsLoading(false)} />
         ) : (
           <div key="main-content">
-            <nav className="fixed top-0 left-0 w-full z-40 px-8 py-6 flex justify-between items-center pointer-events-none">
+            <nav className="fixed top-0 left-0 w-full z-40 px-4 py-4 sm:px-6 sm:py-6 flex justify-between items-center pointer-events-none">
               <span />
               <button className="pointer-events-auto text-xs font-mono tracking-widest text-stone-200 border border-white/20 px-4 py-2 rounded-full hover:bg-white/10 transition-all">
                 MENU +

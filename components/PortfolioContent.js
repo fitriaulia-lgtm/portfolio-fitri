@@ -60,8 +60,8 @@ const ACTIVITIES = [
     category: 'Sertifikat',
     title: 'Latihan Keterampilan Manajemen Mahasiswa Tingkat Pra-Dasar',
     year: '2024',
-    summary:
-      'Kegiatan yang membantu mengembangkan kemampuan manajemen, komunikasi, kepemimpinan, dan kerja sama dalam kegiatan mahasiswa.',
+    summary: 'Pengenalan dasar kepemimpinan, manajemen diri, dan kerja sama tim bagi calon pengurus organisasi mahasiswa.',
+    detail: 'Mengikuti diskusi kelompok, mengerjakan tugas individu, menyampaikan pendapat, serta berpartisipasi dalam simulasi kepemimpinan dan kerja sama tim.',
     attachments: [
       {
         label: 'Sertifikat',
@@ -76,71 +76,95 @@ const ACTIVITIES = [
     category: 'Sertifikat',
     title: 'Latihan Keterampilan Manajemen Mahasiswa Tingkat Dasar',
     year: '2024',
-    summary:
-      'Kegiatan yang membantu mengembangkan kemampuan manajemen, komunikasi, kepemimpinan, dan kerja sama dalam kegiatan mahasiswa.',
+    summary: 'Pengembangan kemampuan kepemimpinan, manajemen organisasi, komunikasi, dan pengambilan keputusan.',
+    detail: 'Mengerjakan studi kasus organisasi, menyusun rencana kegiatan, mempresentasikan hasil diskusi kelompok, serta mengikuti simulasi pemecahan masalah dan pengambilan keputusan.',
+    attachments: [
+      {
+        label: 'Sertifikat',
+        src: '/lampiran/lkmm-td.pdf',
+        name: 'lkmm-td.pdf',
+        type: 'pdf',
+      },
+    ],
   },
   {
-    id: 'sekretaris-ppdb',
+    id: 'panitia-workshop-cloud-computing',
     category: 'Kepanitiaan',
-    title: 'Sekretaris — PPDB Mikro',
+    title: 'Panitia — Workshop Cloud Computing',
     year: '2024',
-    summary: 'Koordinasi administrasi dan komunikasi dengan peserta PPDB.',
-    detail:
-      'Bertanggung jawab atas pengarsipan berkas pendaftar, penyusunan jadwal seleksi, serta penyampaian informasi hasil seleksi kepada seluruh peserta.',
+    summary: 'Panitia pada acara Workshop Cloud Computing, membantu pengorganisasian dan pelaksanaan kegiatan.',
+    detail: 'Bertanggung jawab atas persiapan materi, pendaftaran peserta, pengaturan ruang, serta bantuan teknis selama workshop berlangsung.',
+    attachments: [
+      {
+        label: 'Dokumentasi',
+        src: '/lampiran/wcc.pdf',
+        name: 'wcc.pdf',
+        type: 'pdf',
+      },
+    ],
   },
   {
-    id: 'sertifikat-web',
+    id: 'peserta-webinar-skilhub-himti',
     category: 'Sertifikat',
-    title: 'Pemrograman Web Fundamentals',
-    year: '2023',
-    summary: 'Pelatihan dasar HTML, CSS, dan JavaScript dari platform pembelajaran daring.',
-    detail:
-      'Materi mencakup struktur semantik HTML, layout responsif dengan Flexbox dan Grid, serta dasar-dasar manipulasi DOM menggunakan JavaScript.',
-  },
-  {
-    id: 'dies-natalis',
-    category: 'Kepanitiaan',
-    title: 'Panitia Dies Natalis Fakultas',
-    year: '2023',
-    summary: 'Panitia teknis pada acara mahasiswa di kampus.',
-    detail:
-      'Menangani pendaftaran peserta, tata tempat, serta persiapan dekorasi dan konsumsi. Berkolaborasi dengan seluruh divisi agar acara berjalan lancar.',
-  },
-  {
-    id: 'sertifikat-python',
-    category: 'Sertifikat',
-    title: 'Analisis Data dengan Python',
+    title: 'Peserta — Webinar SkilHub Community x HIMTI Universitas Sains Al-Quran',
     year: '2024',
-    summary: 'Pelatihan pengolahan data menggunakan pandas, NumPy, dan visualisasi.',
-    detail:
-      'Materi meliputi pembersihan data, manipulasi tabel, perhitungan statistik deskriptif, serta pembuatan visualisasi dasar untuk mendukung interpretasi data.',
+    summary: 'Peserta pada webinar SkilHub Community x HIMTI Universitas Sains Al-Quran.',
+    detail: 'Mengikuti webinar UX Design vs UX Writing untuk mempelajari dasar-dasar desain pengalaman pengguna (UX), penulisan konten antarmuka, serta perbedaan peran UX Design dan UX Writing dalam pengembangan produk digital.',
+    attachments: [
+      {
+        label: 'Sertifikat',
+        src: '/lampiran/Fitri%20Aulia%20insani%20%20-%20Sertifikat%20Webinar%20SkilHub%20Community%20x%20HIMTI%20Universitas%20Sains%20Al-Quran.pdf',
+        name: 'Fitri Aulia insani  - Sertifikat Webinar SkilHub Community x HIMTI Universitas Sains Al-Quran.pdf',
+        type: 'pdf',
+      },
+    ],
   },
   {
-    id: 'bendahara',
-    category: 'Kepanitiaan',
-    title: 'Bendahara — Malam Temu Mahasiswa',
-    year: '2022',
-    summary: 'Pengelolaan keuangan kegiatan dan penyusunan laporan anggaran.',
-    detail:
-      'Mencatat pemasukan dan pengeluaran, menyiapkan proposal anggaran kegiatan, serta menyusun laporan pertanggungjawaban keuangan yang transparan dan dapat diaudit.',
-  },
-  {
-    id: 'sertifikat-uiux',
+    id: 'pelatihan-dsf-36',
     category: 'Sertifikat',
-    title: 'UI/UX Design Fundamentals',
-    year: '2025',
-    summary: 'Pelatihan principles of user interface design dan prototyping tools.',
-    detail:
-      'Materi meliputi elemen visual, tipografi, warna, prototyping low fidelity, serta principles of user experience yang diterapkan pada studi kasus aplikasi mobile.',
+    title: 'Pelatihan DSF 36 – Front End Developer Dibimbing',
+    year: '2024',
+    summary: 'untuk pemula',
+    detail: 'Mempelajari dasar pengembangan antarmuka website menggunakan HTML, CSS, dan JavaScript, serta penerapan desain responsif untuk menciptakan tampilan website yang menarik dan mudah digunakan.',
+    attachments: [
+      {
+        label: 'Sertifikat',
+        src: '/lampiran/dibimbing.pdf',
+        name: 'dibimbing.pdf',
+        type: 'pdf',
+      },
+    ],
   },
   {
-    id: 'asisten-praktikum',
-    category: 'Organisasi',
-    title: 'Asisten Praktikum Komputer',
-    year: '2023',
-    summary: 'Membantu praktikan memahami konsep dasar pemrograman dan penggunaan lab.',
-    detail:
-      'Mendampingi praktikan saat mengerjakan tugas, menjawab pertanyaan teknis, serta memastikan setiap praktikan dapat menyelesaikan latihan secara mandiri.',
+    id: 'talent-class-batch-17',
+    category: 'Sertifikat',
+    title: 'Pelatihan Talent Class Batch 17 – Introduction to Data Science',
+    year: '2024',
+    summary: 'Pelatihan pengantar data science untuk pemula.',
+    detail: 'Mempelajari pengolahan dan analisis data menggunakan Python, mulai dari pembersihan data, manipulasi data, hingga visualisasi untuk membantu memahami pola dan memperoleh informasi dari data.',
+    attachments: [
+      {
+        label: 'Sertifikat',
+        src: '/lampiran/talenthub.pdf',
+        name: 'talenthub.pdf',
+        type: 'pdf',
+      },
+    ],
+  },
+  {
+    id: 'webinar-jh-dark-web-uncovered',
+    category: 'Sertifikat',
+    title: 'Webinar JH — Dark Web Uncovered',
+    year: '2024',
+    detail: 'Mengikuti kegiatan Dark Web Uncovered untuk menambah wawasan mengenai dark web, keamanan siber, serta risiko dan ancaman yang berkaitan dengan aktivitas di dunia digital.',
+    attachments: [
+      {
+        label: 'Sertifikat',
+        src: '/lampiran/Sertifikat%20JH%20-%20dark%20web%20uncovered%20(93).pdf',
+        name: 'Sertifikat JH - dark web uncovered (93).pdf',
+        type: 'pdf',
+      },
+    ],
   },
 ];
 
@@ -228,10 +252,10 @@ const Timeline = () => {
         const accent = ACTIVITY_ACCENTS[item.category];
 
         return (
-          <li
-            key={item.title}
-            className="relative grid grid-cols-1 gap-4 pb-10 pl-12 md:grid-cols-2 md:gap-12 md:pl-0"
-          >
+            <li
+              key={item.title}
+              className="relative grid grid-cols-1 gap-4 pb-10 pl-8 sm:pl-12 md:grid-cols-2 md:gap-12 md:pl-0"
+            >
             {/* Penanda di atas garis timeline */}
             <span
               aria-hidden="true"
@@ -374,7 +398,7 @@ export default function PortfolioContent({ photoUrl }) {
             </motion.a>
             </div>
 
-            <div className="flex min-h-[480px] items-start justify-center overflow-visible pt-2 md:min-h-[520px] md:justify-end md:pt-0">
+            <div className="flex min-h-[400px] sm:min-h-[480px] items-start justify-center overflow-visible pt-2 md:min-h-[520px] md:justify-end md:pt-0">
               <HangingIdCard photoUrl={photoUrl} />
             </div>
           </motion.div>

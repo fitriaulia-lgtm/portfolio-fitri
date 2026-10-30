@@ -113,7 +113,7 @@ export default function FlowerHero({ mousePos, photoUrl }) {
           className="absolute inset-0 z-20 pointer-events-none"
         >
           {/* KIRI — nama, diletakkan di atas area bunga */}
-          <div className="absolute left-[14%] md:left-[20%] top-[9%] text-left">
+          <div className="absolute left-[6%] sm:left-[10%] md:left-[20%] top-[9%] text-left">
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-stone-50 uppercase leading-[0.85]">
               FITRI AULIA
             </h2>
@@ -123,7 +123,7 @@ export default function FlowerHero({ mousePos, photoUrl }) {
           </div>
 
           {/* KANAN */}
-          <div className="absolute right-[14%] md:right-[20%] top-[58%] text-right">
+          <div className="absolute right-[6%] sm:right-[10%] md:right-[20%] top-[58%] text-right">
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-stone-50 uppercase leading-[0.85]">
               WEB
             </h2>
@@ -135,7 +135,7 @@ export default function FlowerHero({ mousePos, photoUrl }) {
 
         {/* TAGLINE + INDIKATOR SWIPE */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 pointer-events-none">
-          <p className="text-[10px] md:text-xs tracking-[0.35em] uppercase text-stone-500 font-light text-center px-6">
+          <p className="text-[10px] md:text-xs tracking-[0.35em] uppercase text-stone-500 font-light text-center px-4 sm:px-6">
             Turning ideas into real solutions
           </p>
           <div className="flex flex-col items-center gap-2">
