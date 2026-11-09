@@ -165,34 +165,52 @@ const ACTIVITIES = [
         type: 'pdf',
       },
     ],
+},
+  {
+    title: 'Portfolio Website',
+    category: 'Personal Project',
+    desc: 'Website portofolio pribadi dibangun dengan Next.js 16, React, Tailwind CSS, dan Framer Motion. Menampilkan aktivitas, sertifikasi, proyek, dan keahlian teknis dengan animasi interaktif dan desain responsif.',
+    tech: ['Next.js', 'React', 'Tailwind CSS', 'Framer Motion'],
+    github: 'https://github.com/fitriaulia-lgtm/portfolio.git',
+    web: 'https://fitriainsani.vercel.app',
   },
 ];
 
 const PROJECTS = [
   {
-    title: 'Sistem Pendukung Keputusan Menu Makan Bergizi Gratis',
+    title: 'Sistem Pendukung Keputusan Berbasis Web Untuk Pemilihan Menu Gizi Seimbang Pada Program Makan Bergizi Gratis (MBG) Menggunakan Metode AHP dan TOPSIS',
     category: 'Skripsi / Final Thesis',
     desc: 'Sistem Pendukung Keputusan (SPK) berbasis web yang mengintegrasikan metode AHP (Analytic Hierarchy Process) untuk pembobotan kriteria dan TOPSIS untuk pemeringkatan alternatif menu gizi seimbang.',
-    tech: ['Laravel', 'Tailwind CSS', 'Python', 'MySQL', 'AHP & TOPSIS'],
+    tech: ['Laravel', 'MySQL', 'AHP & TOPSIS'],
+    github: 'https://github.com/fitriaulia-lgtm/SPK-menu-gizi.git',
   },
   {
-    title: 'Sistem Manajemen Perpustakaan Digital',
+    title: 'Sistem Informasi Perpustakaan Berbasis Website Di MTS Raudhatul Hidayah Riau',
     category: 'Web Application',
-    desc: 'Aplikasi manajemen inventaris & peminjaman buku berbasis web dengan fitur perhitungan denda otomatis, pencatatan transaksi, dan laporan analitik.',
+    desc: 'Aplikasi manajemen inventaris & peminjaman buku berbasis web.',
     tech: ['Laravel', 'Blade', 'Tailwind CSS', 'MySQL'],
+    github: 'https://github.com/fitriaulia-lgtm/perpustakaan-aul.git',
   },
   {
     title: 'Klasifikasi Penyakit Tanaman Cabai',
     category: 'Computer Vision & Deep Learning',
     desc: 'Model klasifikasi citra digital penyakit daun tanaman menggunakan arsitektur MobileNetV2 dengan fine-tuning yang dilatih menggunakan Python di Google Colab.',
     tech: ['Python', 'MobileNetV2', 'OpenCV', 'Google Colab'],
-  }
+    github: 'https://github.com/fitriaulia-lgtm/Chili_Plant_Disease.git',
+  },
+  {
+    title: 'Portfolio Website',
+    category: 'Personal Project',
+    desc: 'Website portofolio pribadi dibangun dengan Next.js 16, React, Tailwind CSS, dan Framer Motion. Menampilkan aktivitas, sertifikasi, proyek, dan keahlian teknis dengan animasi interaktif dan desain responsif.',
+    tech: ['Next.js', 'React', 'Tailwind CSS', 'Framer Motion'],
+    github: 'https://github.com/fitriaulia-lgtm/portfolio-fitri.git',
+  },
 ];
 
 const SKILLS = [
   "Laravel / PHP", "React.js / Next.js", "Python (Sains Data)", 
   "AHP & TOPSIS (SPK)", "Tailwind CSS", "MySQL / Database Design",
-  "UML / Extreme Programming", "REST APIs"
+  "UML / Extreme Programming",
 ];
 
 // Lampiran disimpan sebagai berkas statis di dalam public/lampiran/,
@@ -284,7 +302,6 @@ const Timeline = () => {
                   >
                     {item.category}
                   </span>
-                  <span className="font-mono text-xs text-stone-500">{item.year}</span>
                 </div>
 
                 <h3 className="mt-3 text-base font-semibold text-white md:text-lg">
@@ -465,12 +482,25 @@ export default function PortfolioContent({ photoUrl }) {
               <p className="text-stone-400 text-sm mb-6 leading-relaxed">
                 {p.desc}
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {p.tech.map((t, i) => (
                   <span key={i} className="text-[10px] font-mono px-3 py-1 bg-white/5 border border-white/10 rounded-full text-stone-300">
                     {t}
                   </span>
                 ))}
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {p.github && (
+                  <a
+                    href={p.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono text-[#d194a2] hover:text-white transition-colors"
+                  >
+                    <Code2 size={12} aria-hidden="true" />
+                    Lihat kode
+                  </a>
+                )}
               </div>
             </motion.div>
           ))}
